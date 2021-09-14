@@ -76,8 +76,10 @@ server <- function(input, output, session) {
         ID <<- "blank"
       }
       
+      ## Add some random numbers to simulate participant experience
       set.seed(as.integer(Sys.time()))
       sample_val = reactiveVal(val = sample(1:2, 1))
+      days_completed_val = reactiveVal(val = sample(3:6, 1))
 
       ## Back-end to filter to the appropriate MTurk ID / Fitbit token
       id_df = mturk_df_full %>% 
@@ -145,7 +147,7 @@ server <- function(input, output, session) {
           arrange(date_time) %>% 
           # mutate(activities_steps = ifelse(activities_steps > 16000, 12279, activities_steps)) %>% 
           mutate(post_survey = ifelse(date_time >= date_recorded, "After Survey", "Before Survey")) %>% 
-          filter(date_time <= date_recorded + 6)
+          filter(date_time <= date_recorded + days_completed_val())
         
         # re-arrange so Before Survey comes first, then After Survey
         plot_df$post_survey <- factor(plot_df$post_survey, levels = c("Before Survey", "After Survey"))
@@ -176,9 +178,11 @@ server <- function(input, output, session) {
         days_completed <<- plot_df %>% 
           filter(post_survey != "Before Survey") %>% 
           slice(-nrow(.)) %>% 
-          nrow() %>% unlist(use.names = FALSE)
+          nrow() %>% unlist(use.names = FALSE) + 1
+      
         
-        if(days_completed > 7 | Sys.Date() >= (unique(plot_df$date_recorded)[1] + 7)){days_completed <<- 7}
+        # if(days_completed > 7 | Sys.Date() >= (unique(plot_df$date_recorded)[1] + 7)){days_completed <<- 7}
+        if(days_completed > 7){days_completed <<- 7}
         
         rounded_pre_avg <<- round(pre_average_steps)
         rounded_during_avg <<- round(during_average_steps)
