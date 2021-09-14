@@ -32,8 +32,8 @@ mturk_df_full = data.frame(
   file_name = rep("timothylee-2020-10-08 00:21:10_success.RDS", 2),
   date_recorded = rep(as.Date("2020-04-18"), 2),
   mturk_id = rep("5e6bbdddd66d92176dd84d05", 2),
-  condition_text = c("I never park in the closest parking spot.",
-                     "I try not to park in the closest parking spot."),
+  condition_text = c("I always park in the furthest parking spot.",
+                     "I try to park in the furthest parking spot."),
   condition = c("Treatment", "Control"),
   url_hash_initial = rep("https://whartonfitbit.shinyapps.io/prolific_research/#access_token=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJLV1IiLCJzdWIiOiI3VDdLNksiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyYWN0IiwiZXhwIjoxNjYyODcwNzU3LCJpYXQiOjE2MzEzMzQ3NTd9.V-Qz1c47lToBkjBJsbSocsuDUg33eOhqLsi4q8p_F-E&user_id=7T7K6K&scope=activity&token_type=Bearer&expires_in=31536000"
                          , 2))
