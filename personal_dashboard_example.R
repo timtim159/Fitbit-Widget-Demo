@@ -27,14 +27,16 @@ library(httr)
 # Contains token information about their Fitbit Data ALONG WITH information from their Qualtrics RCT Survey
 # In other words, dashboard is interactive based on their:
 # (1) condition assignment and (2) their open-ended response
-
+# Demo dataset reflects the variation that may occur (50/50 condition assignment probability)
 mturk_df_full = data.frame(
-        file_name = "timothylee-2020-10-08 00:21:10_success.RDS",
-         date_recorded = as.Date("2020-04-18"),
-         mturk_id = "5e6bbdddd66d92176dd84d05",
-         condition_text = "I always park in the furthest parking spot.",
-         condition = "Treatment",
-         url_hash_initial = "https://whartonfitbit.shinyapps.io/prolific_research/#access_token=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJLV1IiLCJzdWIiOiI3VDdLNksiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyYWN0IiwiZXhwIjoxNjYyODcwNzU3LCJpYXQiOjE2MzEzMzQ3NTd9.V-Qz1c47lToBkjBJsbSocsuDUg33eOhqLsi4q8p_F-E&user_id=7T7K6K&scope=activity&token_type=Bearer&expires_in=31536000")
+  file_name = rep("timothylee-2020-10-08 00:21:10_success.RDS", 2),
+  date_recorded = rep(as.Date("2020-04-18"), 2),
+  mturk_id = rep("5e6bbdddd66d92176dd84d05", 2),
+  condition_text = c("I never park in the closest parking spot.",
+                     "I try not to park in the closest parking spot."),
+  condition = c("Treatment", "Control"),
+  url_hash_initial = rep("https://whartonfitbit.shinyapps.io/prolific_research/#access_token=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJLV1IiLCJzdWIiOiI3VDdLNksiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyYWN0IiwiZXhwIjoxNjYyODcwNzU3LCJpYXQiOjE2MzEzMzQ3NTd9.V-Qz1c47lToBkjBJsbSocsuDUg33eOhqLsi4q8p_F-E&user_id=7T7K6K&scope=activity&token_type=Bearer&expires_in=31536000"
+                         , 2))
 
 
 ui<-function(request){
@@ -74,14 +76,16 @@ server <- function(input, output, session) {
         ID <<- "blank"
       }
       
+      set.seed(as.integer(Sys.time()))
+      sample_val = reactiveVal(val = sample(1:2, 1))
+
       ## Back-end to filter to the appropriate MTurk ID / Fitbit token
       id_df = mturk_df_full %>% 
         filter(mturk_id == ID) %>%
+        slice(sample_val()) %>% 
         mutate(contains_success = ifelse(grepl("_success", file_name), 1, 0)) %>% 
         filter(contains_success == 1) %>% 
         slice(nrow(.))
-      
-      print(id_df)
       
       user_condition_text <<- id_df$condition_text
       user_condition_group <<- id_df$condition
